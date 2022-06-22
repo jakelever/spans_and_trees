@@ -119,8 +119,8 @@ def treeToSpans(elem,is_root=True):
 		span = (0, len(head + children_text), elem.tag, elem.attrib)
 		spans = [ span ] + children_spans
 		
-    # Sort the spans by start, length and the tag name
-	spans = sorted(spans, key=lambda x:(x[0],x[1],x[2]))
+    # Sort the spans by start, length (reversed) and the tag name
+	spans = sorted(spans, key=lambda x:(x[0],-x[1],x[2]))
 	
 	return text, spans
 	
@@ -146,8 +146,8 @@ def spanContainsSpan(parent,child):
 	return contains
 	
 def spansToTree(text, spans):
-    # Sort the spans by start, length and the tag name
-	spans = sorted(spans, key=lambda x:(x[0],x[1],x[2]))
+    # Sort the spans by start, length (reversed) and the tag name
+	spans = sorted(spans, key=lambda x:(x[0],-x[1],x[2]))
 	
 	if len(spans) > 0:
 		first_span_start = spans[0][0]

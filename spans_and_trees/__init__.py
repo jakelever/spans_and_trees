@@ -119,7 +119,8 @@ def treeToSpans(elem,is_root=True):
 		span = (0, len(head + children_text), elem.tag, elem.attrib)
 		spans = [ span ] + children_spans
 		
-	spans = sorted(spans)
+    # Sort the spans by start, length and the tag name
+	spans = sorted(spans, key=lambda x:(x[0],x[1],x[2]))
 	
 	return text, spans
 	
@@ -145,7 +146,8 @@ def spanContainsSpan(parent,child):
 	return contains
 	
 def spansToTree(text, spans):
-	spans = sorted(spans)
+    # Sort the spans by start, length and the tag name
+	spans = sorted(spans, key=lambda x:(x[0],x[1],x[2]))
 	
 	if len(spans) > 0:
 		first_span_start = spans[0][0]
@@ -212,7 +214,7 @@ def spansToPassages(text, spans):
 	
 	tags_to_split_at = {"table","table-wrap","title","p","sec","break","def-item","list-item","caption"}
 	
-	tags_to_annotate = {"xref"}
+	tags_to_annotate = {"Annotation"}
 	
 	altered_text = cleanupText(text)
 	assert len(text) == len(altered_text)

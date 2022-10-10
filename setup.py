@@ -12,7 +12,7 @@ with open(path.join(here, 'requirements.txt'), encoding='utf-8') as f:
 
 setup(name='spans_and_trees',
 
-	version='0.0.1',
+	version='0.1.0',
 
 	description='Convert between XML trees and span representation',
 

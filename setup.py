@@ -48,7 +48,7 @@ setup(name='spans_and_trees',
 		'Programming Language :: Python :: 3.8',
 	],
 
-	keywords='xml spans',
+	keywords='xml',
 	
 	packages=['spans_and_trees'],
 	

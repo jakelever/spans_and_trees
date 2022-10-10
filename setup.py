@@ -16,7 +16,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(name='spans_and_trees',
 
-	version='0.1.3',
+	version='0.1.4',
 
 	description='Convert between XML trees and span representation',
 	

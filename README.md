@@ -87,3 +87,24 @@ for p in passages:
 ```
 
 Each passage's `start`/`end` are offsets into the original `text`; each attached span's offsets are relative to the passage's own `text`.
+
+### Example: a real PMC article via Entrez
+
+Since `spans_to_passages` is tuned for PMC XML by default, here it is applied to a real open-access article fetched from NCBI's Entrez E-utilities:
+
+```python
+import urllib.request
+
+pmcid = "7096066"  # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7096066/
+url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pmc&id={pmcid}&rettype=full&retmode=xml"
+
+with urllib.request.urlopen(url) as response:
+	root = ET.fromstring(response.read())
+
+body = root.find(".//body")
+text, spans = tree_to_spans(body)
+passages = spans_to_passages(text, spans)
+
+print(passages[0])
+# {'start': 0, 'end': 27, 'text': 'Introduction and background', 'spans': []}
+```

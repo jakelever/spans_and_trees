@@ -55,3 +55,35 @@ xmlstr = ET.tostring(root)
 
 print(xmlstr) # b'<anon>The quick <colour dummy_attrib="5">brown</colour> fox jumped over the lazy dog</anon>'
 ```
+
+## spans_to_passages
+
+`spans_to_passages` takes the `text`/`spans` output of `tree_to_spans` and splits it into a list of text passages, one per `split_tags` element (e.g. `p`, `sec`), dropping the content of any `ignore_tags` element (e.g. `table`), and attaching any `keep_tags` spans (e.g. `bold`) that fall within each passage. This is useful for turning full-text articles, such as those from PubMed Central (PMC), into chunks for downstream NLP. The three tag sets default to `PMC_SPLIT_TAGS`, `PMC_IGNORE_TAGS`, and `PMC_KEEP_TAGS`, but can be overridden.
+
+```python
+from spans_and_trees import tree_to_spans, spans_to_passages
+
+xmlstring = """
+<article>
+	<sec>
+		<title>Introduction</title>
+		<p>This is <bold>important</bold> background text.</p>
+		<table-wrap>Some table content we want to ignore.</table-wrap>
+		<p>A second paragraph follows.</p>
+	</sec>
+</article>
+"""
+
+root = ET.ElementTree(ET.fromstring(xmlstring)).getroot()
+text, spans = tree_to_spans(root)
+
+passages = spans_to_passages(text, spans)
+for p in passages:
+	print(p)
+
+# {'start': 5, 'end': 17, 'text': 'Introduction', 'spans': []}
+# {'start': 20, 'end': 54, 'text': 'This is important background text.', 'spans': [(8, 9, 'bold', {})]}
+# {'start': 97, 'end': 124, 'text': 'A second paragraph follows.', 'spans': []}
+```
+
+Each passage's `start`/`end` are offsets into the original `text`; each attached span's offsets are relative to the passage's own `text`.

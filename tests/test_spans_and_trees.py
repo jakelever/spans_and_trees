@@ -3,8 +3,8 @@ import xml.etree.ElementTree as ET
 import pytest
 
 from spans_and_trees import (
+	PMC_IGNORE_TAGS,
 	PMC_SPLIT_TAGS,
-	PMC_TAGS_TO_IGNORE,
 	cleanup_text,
 	span_contains_span,
 	spans_intersect,
@@ -212,8 +212,8 @@ class TestSpansToPassages:
 
 class TestPmcTagConstants:
 	def test_tags_to_ignore_is_exported_and_used_as_default(self):
-		assert "table" in PMC_TAGS_TO_IGNORE
-		assert "graphic" in PMC_TAGS_TO_IGNORE
+		assert "table" in PMC_IGNORE_TAGS
+		assert "graphic" in PMC_IGNORE_TAGS
 
 	def test_split_tags_is_exported_and_used_as_default(self):
 		assert "p" in PMC_SPLIT_TAGS

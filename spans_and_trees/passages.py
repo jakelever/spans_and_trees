@@ -14,6 +14,7 @@ PMC_TAGS_TO_IGNORE = { "table", "table-wrap", "disp-formula",
 
 PMC_SPLIT_TAGS = {"table","table-wrap","title","p","sec","break","def-item","list-item","caption"}
 
+PMC_KEEP_TAGS = {"sup","sub","italic","bold","underline","monospace","sc","overline","strike"}
 
 def cleanup_text(text):
 	orig_text = str(text)
@@ -31,7 +32,7 @@ def cleanup_text(text):
 
 	return text
 
-def spans_to_passages(text, spans, ignore_tags=PMC_TAGS_TO_IGNORE, split_tags=PMC_SPLIT_TAGS):
+def spans_to_passages(text, spans, ignore_tags=PMC_TAGS_TO_IGNORE, split_tags=PMC_SPLIT_TAGS, keep_tags=PMC_KEEP_TAGS):
 	altered_text = cleanup_text(text)
 	
 	split_points = [0, len(altered_text)]
@@ -59,7 +60,7 @@ def spans_to_passages(text, spans, ignore_tags=PMC_TAGS_TO_IGNORE, split_tags=PM
 			start += before_space
 			end -= after_space
 
-			selected_spans = [ (s,length,tag,attrib) for s,length,tag,attrib in spans if s < end and s+length > start ]
+			selected_spans = [ (s,length,tag,attrib) for s,length,tag,attrib in spans if s < end and s+length > start and tag in keep_tags ]
 			truncated_spans = [ (max(s,start)-start,min(s+length,end)-max(s,start),tag,attrib) for s,length,tag,attrib in selected_spans ]
 
 			passage = {'start':start,'end':end,'text':passage_text,'spans':truncated_spans}

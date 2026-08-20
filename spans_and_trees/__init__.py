@@ -5,6 +5,7 @@ from .core import (
 	tree_to_spans,
 )
 from .passages import (
+	PMC_KEEP_TAGS,
 	PMC_SPLIT_TAGS,
 	PMC_TAGS_TO_IGNORE,
 	cleanup_text,
@@ -20,4 +21,5 @@ __all__ = [
 	"spans_to_passages",
 	"PMC_TAGS_TO_IGNORE",
 	"PMC_SPLIT_TAGS",
+	"PMC_KEEP_TAGS",
 ]

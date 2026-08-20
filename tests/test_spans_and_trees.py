@@ -3,11 +3,11 @@ import xml.etree.ElementTree as ET
 import pytest
 
 from spans_and_trees import (
-	cleanupText,
-	spanContainsSpan,
+	cleanup_text,
+	span_contains_span,
+	spans_intersect,
+	spans_to_passages,
 	spans_to_tree,
-	spansIntersect,
-	spansToPassages,
 	tree_to_spans,
 )
 
@@ -126,38 +126,38 @@ class TestRoundTrip:
 
 class TestSpansIntersect:
 	def test_overlapping(self):
-		assert spansIntersect((0, 5, "a", {}), (3, 5, "b", {})) is True
+		assert spans_intersect((0, 5, "a", {}), (3, 5, "b", {})) is True
 
 	def test_touching_but_not_overlapping(self):
-		assert spansIntersect((0, 5, "a", {}), (5, 5, "b", {})) is False
+		assert spans_intersect((0, 5, "a", {}), (5, 5, "b", {})) is False
 
 	def test_disjoint(self):
-		assert spansIntersect((0, 2, "a", {}), (10, 2, "b", {})) is False
+		assert spans_intersect((0, 2, "a", {}), (10, 2, "b", {})) is False
 
 
 class TestSpanContainsSpan:
 	def test_contains(self):
-		assert spanContainsSpan((0, 10, "a", {}), (2, 3, "b", {})) is True
+		assert span_contains_span((0, 10, "a", {}), (2, 3, "b", {})) is True
 
 	def test_does_not_contain(self):
-		assert spanContainsSpan((0, 5, "a", {}), (3, 5, "b", {})) is False
+		assert span_contains_span((0, 5, "a", {}), (3, 5, "b", {})) is False
 
 	def test_exact_match_counts_as_containing(self):
-		assert spanContainsSpan((0, 5, "a", {}), (0, 5, "b", {})) is True
+		assert span_contains_span((0, 5, "a", {}), (0, 5, "b", {})) is True
 
 
 class TestCleanupText:
 	def test_replaces_control_and_separator_characters_with_space(self):
 		text = "hello world !"
-		assert cleanupText(text) == "hello world !"
+		assert cleanup_text(text) == "hello world !"
 
 	def test_normalises_dash_characters(self):
 		text = "a‐b–c—d"
-		assert cleanupText(text) == "a-b-c-d"
+		assert cleanup_text(text) == "a-b-c-d"
 
 	def test_length_is_preserved(self):
 		text = "hello world"
-		assert len(cleanupText(text)) == len(text)
+		assert len(cleanup_text(text)) == len(text)
 
 
 class TestSpansToPassages:
@@ -169,7 +169,7 @@ class TestSpansToPassages:
 			(len(first), len(second), "p", {}),
 		]
 
-		passages = spansToPassages(text, spans)
+		passages = spans_to_passages(text, spans)
 
 		assert [p["text"] for p in passages] == [first, second]
 
@@ -182,7 +182,7 @@ class TestSpansToPassages:
 			(start, len(word), "Annotation", {"type": "example"}),
 		]
 
-		passages = spansToPassages(text, spans)
+		passages = spans_to_passages(text, spans)
 
 		assert len(passages) == 1
 		assert passages[0]["annotations"] == [
@@ -194,6 +194,6 @@ class TestSpansToPassages:
 		text = before + ignored + after
 		spans = [(len(before), len(ignored), "table", {})]
 
-		passages = spansToPassages(text, spans)
+		passages = spans_to_passages(text, spans)
 
 		assert [p["text"] for p in passages] == ["before", "after"]

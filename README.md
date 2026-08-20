@@ -58,11 +58,10 @@ print(xmlstr) # b'<anon>The quick <colour dummy_attrib="5">brown</colour> fox ju
 
 ## spans_to_passages
 
-`spans_to_passages` takes the `text`/`spans` output of `tree_to_spans` and splits it into a list of text passages, one per `split_tags` element (e.g. `p`, `sec`), dropping the content of any `ignore_tags` element (e.g. `table`), and attaching any `keep_tags` spans (e.g. `bold`) that fall within each passage. This is useful for turning full-text articles, such as those from PubMed Central (PMC), into chunks for downstream NLP. `ignore_tags`, `split_tags`, and `keep_tags` have no defaults, so you must always supply them; `spans_and_trees.pmc` provides `PMC_IGNORE_TAGS`, `PMC_SPLIT_TAGS`, and `PMC_KEEP_TAGS` tuned for PMC XML.
+`spans_to_passages` takes the `text`/`spans` output of `tree_to_spans` and splits it into a list of text passages, one per `split_tags` element (e.g. `p`, `sec`), dropping the content of any `ignore_tags` element (e.g. `table`), and attaching any `keep_tags` spans (e.g. `bold`) that fall within each passage.
 
 ```python
 from spans_and_trees import tree_to_spans, spans_to_passages
-from spans_and_trees.pmc import PMC_IGNORE_TAGS, PMC_SPLIT_TAGS, PMC_KEEP_TAGS
 
 xmlstring = """
 <article>
@@ -78,7 +77,7 @@ xmlstring = """
 root = ET.ElementTree(ET.fromstring(xmlstring)).getroot()
 text, spans = tree_to_spans(root)
 
-passages = spans_to_passages(text, spans, ignore_tags=PMC_IGNORE_TAGS, split_tags=PMC_SPLIT_TAGS, keep_tags=PMC_KEEP_TAGS)
+passages = spans_to_passages(text, spans, ignore_tags={'table-wrap'}, split_tags={'title','p'}, keep_tags={'bold'})
 for p in passages:
 	print(p)
 
@@ -91,9 +90,11 @@ Each passage's `start`/`end` are offsets into the original `text`; each attached
 
 ### Example: a real PMC article via Entrez
 
-Here the `spans_and_trees.pmc` tag sets are applied to a real open-access article fetched from NCBI's Entrez E-utilities:
+Here the `spans_and_trees.pmc` tag sets are applied to a real open-access article fetched from NCBI's Entrez E-utilities. For PMC articles, there is a helper function `cleanup_pmc_text` which does some cleaning of common Unicode problems. There are also pre-prepared tag lists for PMC to ignore, split on and keep.
 
 ```python
+from spans_and_trees.pmc import cleanup_pmc_text, PMC_IGNORE_TAGS, PMC_SPLIT_TAGS, PMC_KEEP_TAGS
+
 import urllib.request
 
 pmcid = "7096066"  # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7096066/
@@ -104,6 +105,7 @@ with urllib.request.urlopen(url) as response:
 
 body = root.find(".//body")
 text, spans = tree_to_spans(body)
+text = cleanup_pmc_text(text)
 passages = spans_to_passages(text, spans, ignore_tags=PMC_IGNORE_TAGS, split_tags=PMC_SPLIT_TAGS, keep_tags=PMC_KEEP_TAGS)
 
 print(passages[0])

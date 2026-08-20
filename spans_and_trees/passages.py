@@ -1,18 +1,16 @@
 from .core import validate_spans
-from .pmc import cleanup_pmc_text
 
 
 def spans_to_passages(text, spans, ignore_tags, split_tags, keep_tags):
 	assert isinstance(text, str), "text parameter must be a string"
 	validate_spans(spans)
 
-	altered_text = cleanup_pmc_text(text)
-	
-	split_points = [0, len(altered_text)]
+	working_text = text
+	split_points = [0, len(text)]
 	for start,length,tag,attrib in spans:
 		end = start+length
 		if tag in ignore_tags:
-			altered_text = altered_text[:start] + ' '*length + altered_text[end:]
+			working_text = working_text[:start] + ' '*length + working_text[end:]
 		if tag in split_tags:
 			split_points += [start,end]
 
@@ -22,7 +20,7 @@ def spans_to_passages(text, spans, ignore_tags, split_tags, keep_tags):
 
 	for i in range(len(split_points)-1):
 		start,end = split_points[i],split_points[i+1]
-		passage_text = altered_text[start:end]
+		passage_text = working_text[start:end]
 
 		before_space = len(passage_text) - len(passage_text.lstrip())
 		after_space = len(passage_text) - len(passage_text.rstrip())

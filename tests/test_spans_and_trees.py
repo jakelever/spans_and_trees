@@ -164,6 +164,14 @@ class TestCleanupPmcText:
 
 
 class TestSpansToPassages:
+	def test_rejects_non_string_text(self):
+		with pytest.raises(AssertionError):
+			spans_to_passages(123, [], ignore_tags=set(), split_tags=set(), keep_tags=set())
+
+	def test_rejects_malformed_spans(self):
+		with pytest.raises(AssertionError):
+			spans_to_passages("hello", [(0, 1, "tag")], ignore_tags=set(), split_tags=set(), keep_tags=set())
+
 	def test_splits_on_paragraph_tags(self):
 		first, second = "First paragraph.", "Second paragraph."
 		text = first + second

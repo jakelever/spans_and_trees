@@ -1,7 +1,11 @@
+from .core import validate_spans
 from .pmc import cleanup_pmc_text
 
 
 def spans_to_passages(text, spans, ignore_tags, split_tags, keep_tags):
+	assert isinstance(text, str), "text parameter must be a string"
+	validate_spans(spans)
+
 	altered_text = cleanup_pmc_text(text)
 	
 	split_points = [0, len(altered_text)]

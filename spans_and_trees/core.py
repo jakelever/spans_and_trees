@@ -59,24 +59,23 @@ def span_contains_span(parent,child):
 	contains = (parent_start <= child_start and child_end <= parent_end)
 	return contains
 
-def spans_to_tree(text, spans):
+SPAN_FORMAT_ERROR = "span must be a tuple with four elements. The first is the offset, the second is the length, the third is the name and the fourth is a dictionary of attributes (with string keys and values)"
 
-	# Do some type checking
-	assert isinstance(text, str), "text parameter must be a string"
+def is_valid_span(span):
+	return (
+		isinstance(span, tuple) and len(span) == 4
+		and isinstance(span[0], int) and isinstance(span[1], int)
+		and isinstance(span[2], str) and isinstance(span[3], dict)
+		and all(isinstance(key, str) and isinstance(value, str) for key, value in span[3].items())
+	)
+
+def validate_spans(spans):
 	assert isinstance(spans, list), "spans parameter must be a list of spans"
-	span_format_error = "span must be a tuple with four elements. The first is the offset, the second is the length, the third is the name and the fourth is a dictionary of attributes (with string keys and values)"
-	for span in spans:
-		assert isinstance(span, tuple), span_format_error
-		assert len(span) == 4, span_format_error
-		assert isinstance(span[0], int), span_format_error
-		assert isinstance(span[1], int), span_format_error
-		assert isinstance(span[2], str), span_format_error
-		assert isinstance(span[3], dict), span_format_error
+	assert all(is_valid_span(span) for span in spans), SPAN_FORMAT_ERROR
 
-		for key,value in span[3].items():
-			assert isinstance(key,str), span_format_error
-			assert isinstance(value,str), span_format_error
-
+def spans_to_tree(text, spans):
+	assert isinstance(text, str), "text parameter must be a string"
+	validate_spans(spans)
 
 	# Sort the spans by start, length (reversed) and the tag name
 	spans = sorted(spans, key=lambda x:(x[0],-x[1],x[2]))

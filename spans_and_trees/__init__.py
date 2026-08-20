@@ -1,6 +1,8 @@
-import xml.etree.cElementTree as etree
-from intervaltree import IntervalTree
 import unicodedata
+import xml.etree.ElementTree as etree
+
+from intervaltree import IntervalTree
+
 
 def tree_to_spans(elem,is_root=True):
 	assert isinstance(elem, etree.Element), "tree_to_spans expects an ElementTree element"
@@ -33,10 +35,10 @@ def tree_to_spans(elem,is_root=True):
 	else:
 		span = (0, len(head + children_text), elem.tag, elem.attrib)
 		spans = [ span ] + children_spans
-		
-    # Sort the spans by start, length (reversed) and the tag name
+
+	# Sort the spans by start, length (reversed) and the tag name
 	spans = sorted(spans, key=lambda x:(x[0],-x[1],x[2]))
-	
+
 	return text, spans
 	
 def spansIntersect(a, b):
@@ -79,9 +81,9 @@ def spans_to_tree(text, spans):
 			assert isinstance(value,str), span_format_error
 	
 
-    # Sort the spans by start, length (reversed) and the tag name
+	# Sort the spans by start, length (reversed) and the tag name
 	spans = sorted(spans, key=lambda x:(x[0],-x[1],x[2]))
-	
+
 	if len(spans) > 0:
 		first_span_start = spans[0][0]
 		head = text[:first_span_start]
@@ -124,7 +126,7 @@ def spans_to_tree(text, spans):
 	
 def cleanupText(text):
 	# Remove some "control-like" characters (left/right separator)
-	text = text.replace(u"\u2028", " ").replace(u"\u2029", " ")
+	text = text.replace("\u2028", " ").replace("\u2029", " ")
 	text = "".join(ch if unicodedata.category(ch)[0] != "C" else " " for ch in text )
 	text = "".join(ch if unicodedata.category(ch)[0] != "Z" else " " for ch in text )
 	
@@ -136,16 +138,16 @@ def cleanupText(text):
 	
 def spansToPassages(text, spans):
 	tags_to_ignore = { "table", "table-wrap", "disp-formula",
-    "inline-formula",
-    "ref-list",
-    "bio",
-    "ack",
-    "graphic",
-    "media",
-    "tex-math",
-    "mml:math",
-    "object-id",
-    "ext-link"}
+		"inline-formula",
+		"ref-list",
+		"bio",
+		"ack",
+		"graphic",
+		"media",
+		"tex-math",
+		"mml:math",
+		"object-id",
+		"ext-link"}
 	
 	tags_to_split_at = {"table","table-wrap","title","p","sec","break","def-item","list-item","caption"}
 	
@@ -193,5 +195,3 @@ def spansToPassages(text, spans):
 			passages.append(passage)
 			
 	return passages
-			
-            

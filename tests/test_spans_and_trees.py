@@ -3,12 +3,12 @@ import xml.etree.ElementTree as ET
 import pytest
 
 from spans_and_trees import (
-	tree_to_spans,
+	cleanupText,
+	spanContainsSpan,
 	spans_to_tree,
 	spansIntersect,
-	spanContainsSpan,
-	cleanupText,
 	spansToPassages,
+	tree_to_spans,
 )
 
 

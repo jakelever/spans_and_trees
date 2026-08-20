@@ -29,9 +29,18 @@ dependencies = [
 
 [project.optional-dependencies]
 test = ["pytest"]
+lint = ["ruff"]
 
 [project.urls]
 Homepage = "https://github.com/jakelever/spans_and_trees"
 
 [tool.setuptools]
 packages = ["spans_and_trees"]
+
+[tool.ruff]
+indent-width = 4
+target-version = "py38"
+line-length = 220
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]

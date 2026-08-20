@@ -6,7 +6,7 @@ from spans_and_trees import (
 	PMC_IGNORE_TAGS,
 	PMC_KEEP_TAGS,
 	PMC_SPLIT_TAGS,
-	cleanup_text,
+	cleanup_pmc_text,
 	span_contains_span,
 	spans_intersect,
 	spans_to_passages,
@@ -149,18 +149,18 @@ class TestSpanContainsSpan:
 		assert span_contains_span((0, 5, "a", {}), (0, 5, "b", {})) is True
 
 
-class TestCleanupText:
+class TestCleanupPmcText:
 	def test_replaces_control_and_separator_characters_with_space(self):
 		text = "hello world !"
-		assert cleanup_text(text) == "hello world !"
+		assert cleanup_pmc_text(text) == "hello world !"
 
 	def test_normalises_dash_characters(self):
 		text = "a‐b–c—d"
-		assert cleanup_text(text) == "a-b-c-d"
+		assert cleanup_pmc_text(text) == "a-b-c-d"
 
 	def test_length_is_preserved(self):
 		text = "hello world"
-		assert len(cleanup_text(text)) == len(text)
+		assert len(cleanup_pmc_text(text)) == len(text)
 
 
 class TestSpansToPassages:

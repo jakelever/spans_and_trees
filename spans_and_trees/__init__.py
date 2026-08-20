@@ -5,6 +5,8 @@ from .core import (
 	tree_to_spans,
 )
 from .passages import (
+	PMC_SPLIT_TAGS,
+	PMC_TAGS_TO_IGNORE,
 	cleanup_text,
 	spans_to_passages,
 )
@@ -16,4 +18,6 @@ __all__ = [
 	"span_contains_span",
 	"cleanup_text",
 	"spans_to_passages",
+	"PMC_TAGS_TO_IGNORE",
+	"PMC_SPLIT_TAGS",
 ]

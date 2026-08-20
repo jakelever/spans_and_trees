@@ -1,6 +1,18 @@
 import unicodedata
 
-from intervaltree import IntervalTree
+PMC_TAGS_TO_IGNORE = { "table", "table-wrap", "disp-formula",
+		"inline-formula",
+		"ref-list",
+		"bio",
+		"ack",
+		"graphic",
+		"media",
+		"tex-math",
+		"mml:math",
+		"object-id",
+		"ext-link"}
+
+PMC_SPLIT_TAGS = {"table","table-wrap","title","p","sec","break","def-item","list-item","caption"}
 
 
 def cleanup_text(text):
@@ -15,37 +27,17 @@ def cleanup_text(text):
 
 	return text
 
-def spans_to_passages(text, spans):
-	tags_to_ignore = { "table", "table-wrap", "disp-formula",
-		"inline-formula",
-		"ref-list",
-		"bio",
-		"ack",
-		"graphic",
-		"media",
-		"tex-math",
-		"mml:math",
-		"object-id",
-		"ext-link"}
-
-	tags_to_split_at = {"table","table-wrap","title","p","sec","break","def-item","list-item","caption"}
-
-	tags_to_annotate = {"Annotation"}
-
+def spans_to_passages(text, spans, ignore_tags=PMC_TAGS_TO_IGNORE, split_tags=PMC_SPLIT_TAGS):
 	altered_text = cleanup_text(text)
 	assert len(text) == len(altered_text)
-
-	span_tree = IntervalTree()
 
 	split_points = [0, len(altered_text)]
 	for start,length,tag,attrib in spans:
 		end = start+length
-		if tag in tags_to_ignore:
+		if tag in ignore_tags:
 			altered_text = altered_text[:start] + ' '*length + altered_text[end:]
-		if tag in tags_to_split_at:
+		if tag in split_tags:
 			split_points += [start,end]
-		if tag in tags_to_annotate:
-			span_tree.addi(start,end,(tag,attrib))
 
 	split_points = sorted(set(split_points))
 
@@ -64,13 +56,7 @@ def spans_to_passages(text, spans):
 			start += before_space
 			end -= after_space
 
-			annotations = []
-			for interval in span_tree[start:end]:
-				#print(interval.begin, interval.end, interval.data)
-				annotation = { 'start':interval.begin, 'end':interval.end, 'tag':interval.data[0], 'attrib':interval.data[1]}
-				annotations.append(annotation)
-
-			passage = {'start':start,'end':end,'text':passage_text,'annotations':annotations}
+			passage = {'start':start,'end':end,'text':passage_text}
 			passages.append(passage)
 
 	return passages

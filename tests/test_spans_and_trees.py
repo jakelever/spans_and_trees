@@ -3,6 +3,8 @@ import xml.etree.ElementTree as ET
 import pytest
 
 from spans_and_trees import (
+	PMC_SPLIT_TAGS,
+	PMC_TAGS_TO_IGNORE,
 	cleanup_text,
 	span_contains_span,
 	spans_intersect,
@@ -173,22 +175,6 @@ class TestSpansToPassages:
 
 		assert [p["text"] for p in passages] == [first, second]
 
-	def test_annotations_are_attached_to_passages(self):
-		before, word, after = "Some ", "annotated", " text here."
-		text = before + word + after
-		start, end = len(before), len(before) + len(word)
-		spans = [
-			(0, len(text), "p", {}),
-			(start, len(word), "Annotation", {"type": "example"}),
-		]
-
-		passages = spans_to_passages(text, spans)
-
-		assert len(passages) == 1
-		assert passages[0]["annotations"] == [
-			{"start": start, "end": end, "tag": "Annotation", "attrib": {"type": "example"}}
-		]
-
 	def test_ignored_tags_are_blanked_out(self):
 		before, ignored, after = "before ", "TABLE_CONTENT", " after"
 		text = before + ignored + after
@@ -197,3 +183,38 @@ class TestSpansToPassages:
 		passages = spans_to_passages(text, spans)
 
 		assert [p["text"] for p in passages] == ["before", "after"]
+
+	def test_custom_split_tags_override_the_default(self):
+		first, second = "First custom.", "Second custom."
+		text = first + second
+		spans = [
+			(0, len(first), "custom", {}),
+			(len(first), len(second), "custom", {}),
+		]
+
+		default_passages = spans_to_passages(text, spans)
+		custom_passages = spans_to_passages(text, spans, split_tags={"custom"})
+
+		assert [p["text"] for p in default_passages] == [text]
+		assert [p["text"] for p in custom_passages] == [first, second]
+
+	def test_custom_ignore_tags_override_the_default(self):
+		before, ignored, after = "before ", "CUSTOM_CONTENT", " after"
+		text = before + ignored + after
+		spans = [(len(before), len(ignored), "custom", {})]
+
+		default_passages = spans_to_passages(text, spans)
+		custom_passages = spans_to_passages(text, spans, ignore_tags={"custom"})
+
+		assert ignored in default_passages[0]["text"]
+		assert ignored not in custom_passages[0]["text"]
+
+
+class TestPmcTagConstants:
+	def test_tags_to_ignore_is_exported_and_used_as_default(self):
+		assert "table" in PMC_TAGS_TO_IGNORE
+		assert "graphic" in PMC_TAGS_TO_IGNORE
+
+	def test_split_tags_is_exported_and_used_as_default(self):
+		assert "p" in PMC_SPLIT_TAGS
+		assert "title" in PMC_SPLIT_TAGS

@@ -5,11 +5,13 @@ from .core import (
 	tree_to_spans,
 )
 from .passages import (
+	cleanup_text,
+	spans_to_passages,
+)
+from .pmc import (
 	PMC_IGNORE_TAGS,
 	PMC_KEEP_TAGS,
 	PMC_SPLIT_TAGS,
-	cleanup_text,
-	spans_to_passages,
 )
 
 __all__ = [

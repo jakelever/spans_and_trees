@@ -1,44 +1,5 @@
 import unicodedata
 
-PMC_IGNORE_TAGS = {
-	"table",
-	"table-wrap",
-	"disp-formula",
-	"inline-formula",
-	"ref-list",
-	"bio",
-	"ack",
-	"graphic",
-	"media",
-	"tex-math",
-	"mml:math",
-	"object-id",
-	"ext-link",
-}
-
-PMC_SPLIT_TAGS = {
-	"table",
-	"table-wrap",
-	"title",
-	"p",
-	"sec",
-	"break",
-	"def-item",
-	"list-item",
-	"caption",
-}
-
-PMC_KEEP_TAGS = {
-	"sup",
-	"sub",
-	"italic",
-	"bold",
-	"underline",
-	"monospace",
-	"sc",
-	"overline",
-	"strike",
-}
 
 def cleanup_text(text):
 	orig_text = str(text)
@@ -56,7 +17,7 @@ def cleanup_text(text):
 
 	return text
 
-def spans_to_passages(text, spans, ignore_tags=PMC_IGNORE_TAGS, split_tags=PMC_SPLIT_TAGS, keep_tags=PMC_KEEP_TAGS):
+def spans_to_passages(text, spans, ignore_tags, split_tags, keep_tags):
 	altered_text = cleanup_text(text)
 	
 	split_points = [0, len(altered_text)]

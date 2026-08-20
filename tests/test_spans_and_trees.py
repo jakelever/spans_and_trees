@@ -4,6 +4,7 @@ import pytest
 
 from spans_and_trees import (
 	PMC_IGNORE_TAGS,
+	PMC_KEEP_TAGS,
 	PMC_SPLIT_TAGS,
 	cleanup_text,
 	span_contains_span,
@@ -171,7 +172,7 @@ class TestSpansToPassages:
 			(len(first), len(second), "p", {}),
 		]
 
-		passages = spans_to_passages(text, spans)
+		passages = spans_to_passages(text, spans, ignore_tags=set(), split_tags={"p"}, keep_tags=set())
 
 		assert [p["text"] for p in passages] == [first, second]
 
@@ -180,11 +181,11 @@ class TestSpansToPassages:
 		text = before + ignored + after
 		spans = [(len(before), len(ignored), "table", {})]
 
-		passages = spans_to_passages(text, spans)
+		passages = spans_to_passages(text, spans, ignore_tags={"table"}, split_tags={"table"}, keep_tags=set())
 
 		assert [p["text"] for p in passages] == ["before", "after"]
 
-	def test_custom_split_tags_override_the_default(self):
+	def test_split_tags_creates_passage_boundaries(self):
 		first, second = "First custom.", "Second custom."
 		text = first + second
 		spans = [
@@ -192,29 +193,44 @@ class TestSpansToPassages:
 			(len(first), len(second), "custom", {}),
 		]
 
-		default_passages = spans_to_passages(text, spans)
-		custom_passages = spans_to_passages(text, spans, split_tags={"custom"})
+		unsplit_passages = spans_to_passages(text, spans, ignore_tags=set(), split_tags=set(), keep_tags=set())
+		split_passages = spans_to_passages(text, spans, ignore_tags=set(), split_tags={"custom"}, keep_tags=set())
 
-		assert [p["text"] for p in default_passages] == [text]
-		assert [p["text"] for p in custom_passages] == [first, second]
+		assert [p["text"] for p in unsplit_passages] == [text]
+		assert [p["text"] for p in split_passages] == [first, second]
 
-	def test_custom_ignore_tags_override_the_default(self):
+	def test_ignore_tags_blanks_matching_content(self):
 		before, ignored, after = "before ", "CUSTOM_CONTENT", " after"
 		text = before + ignored + after
 		spans = [(len(before), len(ignored), "custom", {})]
 
-		default_passages = spans_to_passages(text, spans)
-		custom_passages = spans_to_passages(text, spans, ignore_tags={"custom"})
+		kept_passages = spans_to_passages(text, spans, ignore_tags=set(), split_tags=set(), keep_tags=set())
+		ignored_passages = spans_to_passages(text, spans, ignore_tags={"custom"}, split_tags=set(), keep_tags=set())
 
-		assert ignored in default_passages[0]["text"]
-		assert ignored not in custom_passages[0]["text"]
+		assert ignored in kept_passages[0]["text"]
+		assert ignored not in ignored_passages[0]["text"]
+
+	def test_keep_tags_attaches_matching_spans(self):
+		before, kept, after = "before ", "important", " after"
+		text = before + kept + after
+		spans = [(len(before), len(kept), "bold", {})]
+
+		dropped_passages = spans_to_passages(text, spans, ignore_tags=set(), split_tags=set(), keep_tags=set())
+		kept_passages = spans_to_passages(text, spans, ignore_tags=set(), split_tags=set(), keep_tags={"bold"})
+
+		assert dropped_passages[0]["spans"] == []
+		assert kept_passages[0]["spans"] == [(len(before), len(kept), "bold", {})]
 
 
 class TestPmcTagConstants:
-	def test_tags_to_ignore_is_exported_and_used_as_default(self):
+	def test_ignore_tags_is_exported(self):
 		assert "table" in PMC_IGNORE_TAGS
 		assert "graphic" in PMC_IGNORE_TAGS
 
-	def test_split_tags_is_exported_and_used_as_default(self):
+	def test_split_tags_is_exported(self):
 		assert "p" in PMC_SPLIT_TAGS
 		assert "title" in PMC_SPLIT_TAGS
+
+	def test_keep_tags_is_exported(self):
+		assert "bold" in PMC_KEEP_TAGS
+		assert "italic" in PMC_KEEP_TAGS

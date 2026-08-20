@@ -58,10 +58,11 @@ print(xmlstr) # b'<anon>The quick <colour dummy_attrib="5">brown</colour> fox ju
 
 ## spans_to_passages
 
-`spans_to_passages` takes the `text`/`spans` output of `tree_to_spans` and splits it into a list of text passages, one per `split_tags` element (e.g. `p`, `sec`), dropping the content of any `ignore_tags` element (e.g. `table`), and attaching any `keep_tags` spans (e.g. `bold`) that fall within each passage. This is useful for turning full-text articles, such as those from PubMed Central (PMC), into chunks for downstream NLP. The three tag sets default to `PMC_SPLIT_TAGS`, `PMC_IGNORE_TAGS`, and `PMC_KEEP_TAGS`, but can be overridden.
+`spans_to_passages` takes the `text`/`spans` output of `tree_to_spans` and splits it into a list of text passages, one per `split_tags` element (e.g. `p`, `sec`), dropping the content of any `ignore_tags` element (e.g. `table`), and attaching any `keep_tags` spans (e.g. `bold`) that fall within each passage. This is useful for turning full-text articles, such as those from PubMed Central (PMC), into chunks for downstream NLP. `ignore_tags`, `split_tags`, and `keep_tags` have no defaults, so you must always supply them; `spans_and_trees.pmc` provides `PMC_IGNORE_TAGS`, `PMC_SPLIT_TAGS`, and `PMC_KEEP_TAGS` tuned for PMC XML.
 
 ```python
 from spans_and_trees import tree_to_spans, spans_to_passages
+from spans_and_trees.pmc import PMC_IGNORE_TAGS, PMC_SPLIT_TAGS, PMC_KEEP_TAGS
 
 xmlstring = """
 <article>
@@ -77,7 +78,7 @@ xmlstring = """
 root = ET.ElementTree(ET.fromstring(xmlstring)).getroot()
 text, spans = tree_to_spans(root)
 
-passages = spans_to_passages(text, spans)
+passages = spans_to_passages(text, spans, ignore_tags=PMC_IGNORE_TAGS, split_tags=PMC_SPLIT_TAGS, keep_tags=PMC_KEEP_TAGS)
 for p in passages:
 	print(p)
 
@@ -90,7 +91,7 @@ Each passage's `start`/`end` are offsets into the original `text`; each attached
 
 ### Example: a real PMC article via Entrez
 
-Since `spans_to_passages` is tuned for PMC XML by default, here it is applied to a real open-access article fetched from NCBI's Entrez E-utilities:
+Here the `spans_and_trees.pmc` tag sets are applied to a real open-access article fetched from NCBI's Entrez E-utilities:
 
 ```python
 import urllib.request
@@ -103,7 +104,7 @@ with urllib.request.urlopen(url) as response:
 
 body = root.find(".//body")
 text, spans = tree_to_spans(body)
-passages = spans_to_passages(text, spans)
+passages = spans_to_passages(text, spans, ignore_tags=PMC_IGNORE_TAGS, split_tags=PMC_SPLIT_TAGS, keep_tags=PMC_KEEP_TAGS)
 
 print(passages[0])
 # {'start': 0, 'end': 27, 'text': 'Introduction and background', 'spans': []}

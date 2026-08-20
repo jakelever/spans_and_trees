@@ -73,7 +73,7 @@ def validate_spans(spans):
 	assert isinstance(spans, list), "spans parameter must be a list of spans"
 	assert all(is_valid_span(span) for span in spans), SPAN_FORMAT_ERROR
 
-def spans_to_tree(text, spans):
+def spans_to_tree(text, spans, root_tag="tree"):
 	assert isinstance(text, str), "text parameter must be a string"
 	validate_spans(spans)
 
@@ -86,7 +86,7 @@ def spans_to_tree(text, spans):
 	else:
 		head = text
 
-	elem = etree.Element("anon")
+	elem = etree.Element(root_tag)
 	elem.text = head
 
 

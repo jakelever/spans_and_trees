@@ -53,8 +53,10 @@ We can check the XML tree that has been created:
 ```python
 xmlstr = ET.tostring(root)
 
-print(xmlstr) # b'<anon>The quick <colour dummy_attrib="5">brown</colour> fox jumped over the lazy dog</anon>'
+print(xmlstr) # b'<tree>The quick <colour dummy_attrib="5">brown</colour> fox jumped over the lazy dog</tree>'
 ```
+
+The root element's tag defaults to `"tree"`, since spans don't record a tag for the whole document (`tree_to_spans` doesn't include one either). Pass `root_tag` to use something else, e.g. `spans_to_tree(text, spans, root_tag="doc")`.
 
 ## spans_to_passages
 
@@ -121,5 +123,5 @@ print(passage)
 
 elem = spans_to_tree(passage["text"], passage["spans"])
 print(ET.tostring(elem))
-# b'<anon><sup>1</sup>H NMR Spectroscopy</anon>'
+# b'<tree><sup>1</sup>H NMR Spectroscopy</tree>'
 ```

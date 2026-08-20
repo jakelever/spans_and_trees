@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "spans_and_trees"
+version = "0.1.4"
+description = "Convert between XML trees and span representation"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [
+	{ name = "Jake Lever", email = "jake.lever@gmail.com" },
+]
+keywords = ["xml"]
+classifiers = [
+	"Development Status :: 4 - Beta",
+	"Intended Audience :: Developers",
+	"License :: OSI Approved :: MIT License",
+	"Programming Language :: Python :: 3.8",
+	"Programming Language :: Python :: 3.9",
+	"Programming Language :: Python :: 3.10",
+	"Programming Language :: Python :: 3.11",
+	"Programming Language :: Python :: 3.12",
+]
+requires-python = ">=3.8"
+dependencies = [
+	"intervaltree",
+]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[project.urls]
+Homepage = "https://github.com/jakelever/spans_and_trees"
+
+[tool.setuptools]
+packages = ["spans_and_trees"]

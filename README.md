@@ -89,39 +89,3 @@ for p in passages:
 ```
 
 Each passage's `start`/`end` are offsets into the original `text`; each attached span's offsets are relative to the passage's own `text`.
-
-### Example: a real PMC article via Entrez
-
-Here the `spans_and_trees.pmc` tag sets are applied to a real open-access article fetched from NCBI's Entrez E-utilities. For PMC articles, there is a helper function `cleanup_pmc_text` which does some cleaning of common Unicode problems. There are also pre-prepared tag lists for PMC to ignore, split on and keep.
-
-```python
-from spans_and_trees.pmc import cleanup_pmc_text, PMC_IGNORE_TAGS, PMC_SPLIT_TAGS, PMC_KEEP_TAGS
-
-import urllib.request
-
-pmcid = "13488400"  # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13488400/
-url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pmc&id={pmcid}&rettype=full&retmode=xml"
-
-with urllib.request.urlopen(url) as response:
-	root = ET.fromstring(response.read())
-
-body = root.find(".//body")
-text, spans = tree_to_spans(body)
-text = cleanup_pmc_text(text)
-passages = spans_to_passages(text, spans, ignore_tags=PMC_IGNORE_TAGS, split_tags=PMC_SPLIT_TAGS, keep_tags=PMC_KEEP_TAGS)
-
-print(passages[0])
-# {'start': 0, 'end': 12, 'text': 'Introduction', 'spans': []}
-```
-
-Since `keep_tags` includes `sup`, a passage containing e.g. an isotope like "¹H" keeps that as a span rather than losing it. Passing a passage's `text`/`spans` back into `spans_to_tree` rebuilds that markup:
-
-```python
-passage = passages[22]
-print(passage)
-# {'start': 14361, 'end': 14380, 'text': '1H NMR Spectroscopy', 'spans': [(0, 1, 'sup', {})]}
-
-elem = spans_to_tree(passage["text"], passage["spans"])
-print(ET.tostring(elem))
-# b'<tree><sup>1</sup>H NMR Spectroscopy</tree>'
-```

@@ -1,12 +1,8 @@
-import xml.etree.ElementTree as ET
+﻿import xml.etree.ElementTree as ET
 
 import pytest
 
 from spans_and_trees import (
-	PMC_IGNORE_TAGS,
-	PMC_KEEP_TAGS,
-	PMC_SPLIT_TAGS,
-	cleanup_pmc_text,
 	span_contains_span,
 	spans_intersect,
 	spans_to_passages,
@@ -149,20 +145,6 @@ class TestSpanContainsSpan:
 		assert span_contains_span((0, 5, "a", {}), (0, 5, "b", {})) is True
 
 
-class TestCleanupPmcText:
-	def test_replaces_control_and_separator_characters_with_space(self):
-		text = "hello world !"
-		assert cleanup_pmc_text(text) == "hello world !"
-
-	def test_normalises_dash_characters(self):
-		text = "a‐b–c—d"
-		assert cleanup_pmc_text(text) == "a-b-c-d"
-
-	def test_length_is_preserved(self):
-		text = "hello world"
-		assert len(cleanup_pmc_text(text)) == len(text)
-
-
 class TestSpansToPassages:
 	def test_rejects_non_string_text(self):
 		with pytest.raises(AssertionError):
@@ -228,17 +210,3 @@ class TestSpansToPassages:
 
 		assert dropped_passages[0]["spans"] == []
 		assert kept_passages[0]["spans"] == [(len(before), len(kept), "bold", {})]
-
-
-class TestPmcTagConstants:
-	def test_ignore_tags_is_exported(self):
-		assert "table" in PMC_IGNORE_TAGS
-		assert "graphic" in PMC_IGNORE_TAGS
-
-	def test_split_tags_is_exported(self):
-		assert "p" in PMC_SPLIT_TAGS
-		assert "title" in PMC_SPLIT_TAGS
-
-	def test_keep_tags_is_exported(self):
-		assert "bold" in PMC_KEEP_TAGS
-		assert "italic" in PMC_KEEP_TAGS

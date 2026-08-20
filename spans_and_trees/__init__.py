@@ -2,8 +2,8 @@ import xml.etree.cElementTree as etree
 from intervaltree import IntervalTree
 import unicodedata
 
-def treeToSpans(elem,is_root=True):
-	assert isinstance(elem, etree.Element), "treeToSpans expects an ElementTree element"
+def tree_to_spans(elem,is_root=True):
+	assert isinstance(elem, etree.Element), "tree_to_spans expects an ElementTree element"
 
 	# Extract any raw text directly in XML element or just after
 	head = ""
@@ -18,7 +18,7 @@ def treeToSpans(elem,is_root=True):
 	# Then get the text from all child XML nodes recursively
 	children_text,children_spans = "",[]
 	for child in elem:
-		child_text,child_spans = treeToSpans(child,is_root=False)
+		child_text,child_spans = tree_to_spans(child,is_root=False)
 		children_text += child_text
 		
 		child_spans = [ (start+offset,length,tag,attrib) for start,length,tag,attrib in child_spans ]
@@ -60,7 +60,7 @@ def spanContainsSpan(parent,child):
 	contains = (parent_start <= child_start and child_end <= parent_end)
 	return contains
 	
-def spansToTree(text, spans):
+def spans_to_tree(text, spans):
 
 	# Do some type checking
 	assert isinstance(text, str), "text parameter must be a string"
@@ -113,7 +113,7 @@ def spansToTree(text, spans):
 		subtext = text[current_span_start:current_span_end]
 		subspans = [ (start-current_span_start,length,tag,attrib) for start,length,tag,attrib in subspans ]
 		
-		child_elem = spansToTree(subtext,subspans)
+		child_elem = spans_to_tree(subtext,subspans)
 		child_elem.tail = tail
 		child_elem.tag = current_span[2]
 		child_elem.attrib = current_span[3]

@@ -16,6 +16,8 @@ PMC_SPLIT_TAGS = {"table","table-wrap","title","p","sec","break","def-item","lis
 
 
 def cleanup_text(text):
+	orig_text = str(text)
+
 	# Remove some "control-like" characters (left/right separator)
 	text = text.replace("\u2028", " ").replace("\u2029", " ")
 	text = "".join(ch if unicodedata.category(ch)[0] != "C" else " " for ch in text )
@@ -25,12 +27,13 @@ def cleanup_text(text):
 	for dc in dash_characters:
 		text = text.replace(dc,"-")
 
+	assert len(text) == len(orig_text)
+
 	return text
 
 def spans_to_passages(text, spans, ignore_tags=PMC_TAGS_TO_IGNORE, split_tags=PMC_SPLIT_TAGS):
 	altered_text = cleanup_text(text)
-	assert len(text) == len(altered_text)
-
+	
 	split_points = [0, len(altered_text)]
 	for start,length,tag,attrib in spans:
 		end = start+length
@@ -56,7 +59,10 @@ def spans_to_passages(text, spans, ignore_tags=PMC_TAGS_TO_IGNORE, split_tags=PM
 			start += before_space
 			end -= after_space
 
-			passage = {'start':start,'end':end,'text':passage_text}
+			selected_spans = [ (s,length,tag,attrib) for s,length,tag,attrib in spans if s < end and s+length > start ]
+			truncated_spans = [ (max(s,start)-start,min(s+length,end)-max(s,start),tag,attrib) for s,length,tag,attrib in selected_spans ]
+
+			passage = {'start':start,'end':end,'text':passage_text,'spans':truncated_spans}
 			passages.append(passage)
 
 	return passages

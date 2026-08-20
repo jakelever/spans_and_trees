@@ -1,10 +1,12 @@
 from .core import (
-	cleanup_text,
 	span_contains_span,
 	spans_intersect,
-	spans_to_passages,
 	spans_to_tree,
 	tree_to_spans,
+)
+from .passages import (
+	cleanup_text,
+	spans_to_passages,
 )
 
 __all__ = [

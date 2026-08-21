@@ -1,5 +1,7 @@
 # Spans and Trees
 
+[![Tests](https://github.com/jakelever/spans_and_trees/workflows/Tests/badge.svg?branch=main)](https://github.com/jakelever/spans_and_trees/actions) [![codecov](https://codecov.io/gh/jakelever/spans_and_trees/branch/main/graph/badge.svg)](https://codecov.io/gh/jakelever/spans_and_trees)
+
 A small Python library for converting between XML trees and a span-based structure. This can be useful for extracting sections of text from XML documents and doing special things with some of the tags.
 
 The two main functions are **tree_to_spans** and **spans_to_tree** for converting between an ElementTree element and text with a list of spans. Examples are shown below.

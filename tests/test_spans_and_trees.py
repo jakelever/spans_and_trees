@@ -133,6 +133,12 @@ class TestSpansIntersect:
 	def test_disjoint(self):
 		assert spans_intersect((0, 2, "a", {}), (10, 2, "b", {})) is False
 
+	def test_disjoint_with_second_span_first(self):
+		# b entirely before a - exercises the "elif b_end <= a_start" branch, which the
+		# other disjoint/touching cases above never reach (they're always caught by the
+		# first "a_end <= b_start" check since a comes first in those)
+		assert spans_intersect((10, 2, "a", {}), (0, 2, "b", {})) is False
+
 
 class TestSpanContainsSpan:
 	def test_contains(self):

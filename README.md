@@ -4,6 +4,12 @@
 
 A small Python library for converting between XML trees and a span-based structure. This can be useful for extracting sections of text from XML documents and doing special things with some of the tags.
 
+## Install
+
+```bash
+pip install spans-and-trees
+```
+
 The three functions are **tree_to_spans**, **spans_to_tree** and **spans_to_passages** for converting between an ElementTree element and text with a list of spans. Examples are shown below.
 
 ## tree_to_spans

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "spans_and_trees"
-version = "0.3.0"
+version = "0.3.1"
 description = "Convert between XML trees and span representation"
 readme = "README.md"
 license = { text = "MIT" }

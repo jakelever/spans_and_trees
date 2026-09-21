@@ -41,8 +41,6 @@ The format of the spans is a `Span`, a namedtuple of length 4 (importable from `
 3. `tag` - The tag of the span
 4. `attrib` - A dictionary of the attributes of the span.
 
-Since `Span` is a namedtuple, it behaves like a plain tuple (indexing, unpacking, equality with plain 4-tuples all work), but also supports named field access, e.g. `span.tag` instead of `span[2]`. Functions that accept spans as input (`spans_to_tree`, `spans_to_passages`) also accept plain 4-tuples - you don't need to construct `Span` objects yourself.
-
 ## spans_to_tree
 
 Now we create a dummy document with a block of text and a span at particular offset.

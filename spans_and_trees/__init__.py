@@ -1,4 +1,5 @@
 from .core import (
+	Span,
 	span_contains_span,
 	spans_intersect,
 	spans_to_tree,
@@ -9,6 +10,7 @@ from .passages import (
 )
 
 __all__ = [
+	"Span",
 	"tree_to_spans",
 	"spans_to_tree",
 	"spans_intersect",

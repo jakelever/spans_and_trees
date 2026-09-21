@@ -1,4 +1,4 @@
-from .core import validate_spans
+from .core import Span, validate_spans
 
 
 def spans_to_passages(text, spans, ignore_tags, split_tags, keep_tags):
@@ -31,8 +31,8 @@ def spans_to_passages(text, spans, ignore_tags, split_tags, keep_tags):
 			start += before_space
 			end -= after_space
 
-			selected_spans = [ (s,length,tag,attrib) for s,length,tag,attrib in spans if s < end and s+length > start and tag in keep_tags ]
-			truncated_spans = [ (max(s,start)-start,min(s+length,end)-max(s,start),tag,attrib) for s,length,tag,attrib in selected_spans ]
+			selected_spans = [ Span(s,length,tag,attrib) for s,length,tag,attrib in spans if s < end and s+length > start and tag in keep_tags ]
+			truncated_spans = [ Span(max(s,start)-start,min(s+length,end)-max(s,start),tag,attrib) for s,length,tag,attrib in selected_spans ]
 
 			passage = {'start':start,'end':end,'text':passage_text,'spans':truncated_spans}
 			passages.append(passage)

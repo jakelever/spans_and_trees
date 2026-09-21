@@ -1,4 +1,7 @@
 import xml.etree.ElementTree as etree
+from collections import namedtuple
+
+Span = namedtuple("Span", ["start", "length", "tag", "attrib"])
 
 
 def tree_to_spans(elem,is_root=True):
@@ -20,7 +23,7 @@ def tree_to_spans(elem,is_root=True):
 		child_text,child_spans = tree_to_spans(child,is_root=False)
 		children_text += child_text
 
-		child_spans = [ (start+offset,length,tag,attrib) for start,length,tag,attrib in child_spans ]
+		child_spans = [ Span(start+offset,length,tag,attrib) for start,length,tag,attrib in child_spans ]
 		offset += len(child_text)
 
 		children_spans += child_spans
@@ -30,7 +33,7 @@ def tree_to_spans(elem,is_root=True):
 	if is_root:
 		spans = children_spans
 	else:
-		span = (0, len(head + children_text), elem.tag, elem.attrib)
+		span = Span(0, len(head + children_text), elem.tag, elem.attrib)
 		spans = [ span ] + children_spans
 
 	# Sort the spans by start, length (reversed) and the tag name
@@ -109,7 +112,7 @@ def spans_to_tree(text, spans, root_tag="tree"):
 			tail = text[current_span_end:]
 
 		subtext = text[current_span_start:current_span_end]
-		subspans = [ (start-current_span_start,length,tag,attrib) for start,length,tag,attrib in subspans ]
+		subspans = [ Span(start-current_span_start,length,tag,attrib) for start,length,tag,attrib in subspans ]
 
 		child_elem = spans_to_tree(subtext,subspans)
 		child_elem.tail = tail
